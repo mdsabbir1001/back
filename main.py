@@ -15,7 +15,8 @@ app = FastAPI()
 # Ei block ta add korun
 origins = [
     "http://localhost:5173", # Jodi local e test koren
-    "https://your-github-username.github.io", # Apnar GitHub Pages URL (ETA CHANGE KORUN)
+    "https://minimindcreatives.netlify.app", # Apnar main website URL
+    "https://adminminimind.netlify.app", # Apnar admin dashboard URL
     # Aro onno kono frontend URL thakle add korte paren
 ]
 
