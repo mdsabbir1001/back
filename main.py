@@ -268,6 +268,9 @@ async def upload_image(file: UploadFile = File(...), user: dict = Depends(get_cu
             file_options={"content-type": file.content_type}
         )
 
+        # Get public URL
+        public_url = supabase.storage.from_(bucket_name).get_public_url(file_path)
+
         return {"message": "Image uploaded successfully", "url": public_url}
     except Exception as e:
         # More specific error handling can be added here
