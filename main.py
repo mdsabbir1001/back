@@ -62,6 +62,11 @@ class TeamMember(BaseModel):
     name: str
     designation: str
     image_url: str
+    bio: Optional[str] = None
+    specialties: Optional[List[str]] = None
+    social_url_a: Optional[str] = None
+    social_url_b: Optional[str] = None
+    social_url_c: Optional[str] = None
 
 class PortfolioCategory(BaseModel):
     name: str
