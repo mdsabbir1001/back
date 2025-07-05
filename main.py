@@ -71,6 +71,14 @@ class PortfolioProject(BaseModel):
     image_url: str
     category_id: int
 
+class Service(BaseModel):
+    title: str
+    description: str
+    icon: str
+    price: Optional[str] = None
+    features: List[str]
+    cover_image_url: Optional[str] = None
+
 # --- Root ---
 
 @app.get("/")
@@ -121,6 +129,41 @@ async def update_content(key: str, content: Content, user: dict = Depends(get_cu
              # If key doesn't exist, create it
             response, count = supabase.table('contents').insert(content.dict()).execute()
         return response[1]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# --- Services Management ---
+
+@app.get("/services", response_model=List[Service])
+async def get_all_services():
+    try:
+        response, count = supabase.table('services').select("*").execute()
+        return response[1]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/services")
+async def create_service(service: Service, user: dict = Depends(get_current_user)):
+    try:
+        response, count = supabase.table('services').insert(service.dict()).execute()
+        return response[1]
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.put("/services/{service_id}")
+async def update_service(service_id: str, service: Service, user: dict = Depends(get_current_user)):
+    try:
+        response, count = supabase.table('services').update(service.dict()).eq("id", service_id).execute()
+        return response[1]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/services/{service_id}")
+async def delete_service(service_id: str, user: dict = Depends(get_current_user)):
+    try:
+        response, count = supabase.table('services').delete().eq("id", service_id).execute()
+        return {"message": "Service deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
