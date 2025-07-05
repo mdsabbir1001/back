@@ -121,9 +121,17 @@ async def get_content(key: str):
         if response[1]:
             content_data = response[1]
             if 'value' in content_data and content_data['value']:
-                content_data['value'] = json.loads(content_data['value'])
+                try:
+                    parsed_value = json.loads(content_data['value'])
+                    if 'featuredServices' not in parsed_value or not isinstance(parsed_value['featuredServices'], list):
+                        parsed_value['featuredServices'] = []
+                    content_data['value'] = parsed_value
+                except json.JSONDecodeError:
+                    content_data['value'] = {"featuredServices": []} # Fallback if JSON is invalid
+            else:
+                content_data['value'] = {"featuredServices": []} # Default if value is empty
             return content_data
-        return {}
+        return {"value": {"featuredServices": []}} # Default if no content found
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
