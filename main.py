@@ -85,6 +85,33 @@ class Service(BaseModel):
     features: List[str]
     cover_image_url: Optional[str] = None
 
+class ContactInfo(BaseModel):
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    business_hours: Optional[str] = None
+    social_links: Optional[dict] = None
+
+class ServicePreview(BaseModel):
+    cover_image: Optional[str] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
+
+class HomeContent(BaseModel):
+    logo_url: Optional[str] = None
+    brand_name: Optional[str] = None
+    hero_title: Optional[str] = None
+    hero_title_highlight: Optional[str] = None
+    hero_subtitle: Optional[str] = None
+    projects_completed: Optional[int] = None
+    happy_clients: Optional[int] = None
+    services_title: Optional[str] = None
+    services_subtitle: Optional[str] = None
+    service_preview1: Optional[ServicePreview] = None
+    service_preview2: Optional[ServicePreview] = None
+    service_preview3: Optional[ServicePreview] = None
+    footer_contact_info: Optional[ContactInfo] = None
+
 # --- Root ---
 
 @app.get("/")
@@ -140,6 +167,16 @@ async def get_content(key: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/content/home-content", response_model=HomeContent)
+async def get_home_content():
+    try:
+        response, count = supabase.table('home_content').select("*").limit(1).execute()
+        if response[1]:
+            return response[1][0]
+        return HomeContent() # Return default empty model if no content found
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.put("/content/{key}")
 async def update_content(key: str, content: Content, user: dict = Depends(get_current_user)):
     try:
@@ -152,6 +189,20 @@ async def update_content(key: str, content: Content, user: dict = Depends(get_cu
         if not response[1]:
              # If key doesn't exist, create it
             response, count = supabase.table('contents').insert(content_dict).execute()
+        return response[1]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.put("/content/home-content")
+async def update_home_content(content: HomeContent, user: dict = Depends(get_current_user)):
+    try:
+        # Assuming a single row for home content, update by a known ID or fetch the existing one
+        # For simplicity, using a fixed ID '1'. In a real app, you might fetch the ID dynamically.
+        response, count = supabase.table('home_content').update(content.dict()).eq("id", "1").execute()
+        if not response[1]:
+            # If no row with ID '1' exists, insert it
+            response, count = supabase.table('home_content').insert({"id": "1", **content.dict()}).execute()
         return response[1]
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -325,8 +376,8 @@ async def upload_image(file: UploadFile = File(...), user: dict = Depends(get_cu
     try:
         file_content = await file.read()
         # Use a generic bucket name, or make it dynamic if needed
-        bucket_name = "images" 
-        file_path = f"public/{file.filename}"
+        bucket_name = "website-images" 
+        file_path = file.filename
 
         # Upload to Supabase Storage
         supabase.storage.from_(bucket_name).upload(
