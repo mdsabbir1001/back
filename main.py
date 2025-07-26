@@ -15,6 +15,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import datetime
 import uuid
+import asyncio
 import logging
 
 # --- Basic Logging Configuration ---
