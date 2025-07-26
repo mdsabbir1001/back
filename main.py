@@ -1078,3 +1078,4 @@ async def upload_image(file: Optional[UploadFile] = File(None), image_url: Optio
         # You might want to add logic to fetch and store the image from the URL.
         logging.info(f"Image URL received: {image_url}")
         return {"message": "Image URL received", "url": image_url}
+# --- Home Page Management ---
