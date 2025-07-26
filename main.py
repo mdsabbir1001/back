@@ -35,6 +35,8 @@ async def global_exception_handler(request: Request, exc: Exception):
 # e.g., ["http://localhost:3000", "https://your-production-domain.com"]
 origins = [
     "http://localhost:5174", # For local development
+    "https://minimindcreatives.netlify.app",
+    "https://minimind-backend.onrender.com",
     # "https://your-production-frontend.com" # Add your production frontend URL here
 ]
 
