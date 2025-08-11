@@ -202,7 +202,7 @@ class HeroImageOut(HeroImageIn):
 class HomeStatIn(BaseModel):
     number: str
     label: str
-    icon_name: Optional[str] = None
+    icon: Optional[str] = None
     display_order: int
 
 class HomeStatOut(HomeStatIn):
